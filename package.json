@@ -1,6 +1,7 @@
 {
   "name": "qordial-vue-skeleton",
   "version": "0.0.0",
+  "description": "starting point for new Q-Apps built with qordial+Vue",
   "private": true,
   "type": "module",
   "scripts": {
