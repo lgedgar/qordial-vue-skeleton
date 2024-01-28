@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@oruga-ui/oruga-next": "^0.8.2",
+    "@oruga-ui/theme-oruga": "^0.2.1",
     "pinia": "^2.1.7",
     "qordial": "^0.1.6",
     "vue": "^3.3.11",
