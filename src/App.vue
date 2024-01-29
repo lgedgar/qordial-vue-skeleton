@@ -1,6 +1,8 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { mapStores } from 'pinia'
+import {useQordialAuthStore} from 'qordial'
+import appsettings from './appsettings'
 </script>
 
 <script>
@@ -8,8 +10,13 @@ export default {
 
     data() {
         return {
+            appsettings,
             darkMode: false,
         }
+    },
+
+    computed: {
+        ...mapStores(useQordialAuthStore),
     },
 
     mounted() {
@@ -25,6 +32,17 @@ export default {
 
     methods: {
 
+        async authButtonClick() {
+            if (!this.qordialAuthStore.address) {
+                await this.$qordial.authenticate()
+            } else {
+                await qortalRequest({
+                    action: 'OPEN_PROFILE',
+                    name: this.qordialAuthStore.username,
+                })
+            }
+        },
+
         setDarkMode(dark) {
             this.darkMode = dark
             const body = document.querySelector('body')
@@ -35,65 +53,55 @@ export default {
 </script>
 
 <template>
+   <header>
+    <div style="display: flex; gap: 1rem; align-items: center;">
 
-  <header>
+      <h1 class="is-size-1"
+          style="flex-grow: 1;">
+        {{ appsettings.appTitle }}
+      </h1>
 
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+      <a v-if="!darkMode"
+         href="#" @click.prevent="setDarkMode(true)">
+        <o-icon icon="moon" size="large" />
+      </a>
+      <a v-if="darkMode"
+         href="#" @click.prevent="setDarkMode(false)">
+        <o-icon icon="sun" size="large" />
+      </a>
 
-    <div class="wrapper">
+      <o-button icon-left="user"
+                @click="authButtonClick">
+        {{ qordialAuthStore.username || "not authenticated" }}
+      </o-button>
 
-      <div class="dark-toggle"
-           style="margin-bottom: 15rem;">
-        <a v-if="!darkMode"
-           href="#" @click.prevent="setDarkMode(true)">
-          <o-icon icon="moon" size="large" />
-        </a>
-        <a v-if="darkMode"
-           href="#" @click.prevent="setDarkMode(false)">
-          <o-icon icon="sun" size="large" />
-        </a>
-      </div>
-
-
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
     </div>
+
+    <nav>
+      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/about">About</RouterLink>
+    </nav>
   </header>
 
-  <RouterView />
+  <div style="padding: 2rem;">
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>
+
 header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-.dark-toggle {
-    margin-bottom: 15rem;
-}
-
-.dark-toggle a:hover {
-    background-color: white;
-}
-body.dark .dark-toggle a:hover {
-    background-color: $dark;
+    padding: 1rem;
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
 }
 
 nav a.router-link-exact-active {
@@ -104,40 +112,4 @@ nav a.router-link-exact-active:hover {
   background-color: transparent;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
 </style>
